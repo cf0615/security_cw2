@@ -34,7 +34,7 @@ def signin():
 		if len(email)<1 or len(password)<1:
 			return render_template('admin/signin.html', error="Email and password are required")
 
-		d = admin_manager.signin(email, hash(password))
+		d = admin_manager.signin(email, password)
 
 		if d and len(d)>0:
 			session['admin'] = int(d["id"])
@@ -151,4 +151,15 @@ def search():
 		return render_template("books/views.html", search=True, books=d, count=len(d), keyword=escape(keyword), g=g, admin=admin)
 
 	return render_template('books/views.html', error="No books found!", keyword=escape(keyword))
+
+
+@admin_view.route('/users/delete/<int:id>', methods=['POST'])
+@admin_manager.admin.login_required
+def delete_user(id):
+	admin_manager.admin.set_session(session, g)
+	
+	if id is not None:
+		admin_manager.delete_user(id)
+	
+	return redirect('/admin/users/view/')
 

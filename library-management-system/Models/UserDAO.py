@@ -5,7 +5,21 @@ class UserDAO():
 
 
 	def list(self):
-		users = self.db.query("select @table.id,@table.name,@table.email,@table.bio,@table.mob,@table.lock,@table.created_at,count(reserve.book_id) as books_owned from @table LEFT JOIN reserve ON reserve.user_id=@table.id GROUP BY reserve.user_id").fetchall()
+		users = self.db.query("""
+			SELECT 
+				@table.*,
+				COUNT(reserve.book_id) as books_owned 
+			FROM @table 
+			LEFT JOIN reserve ON reserve.user_id=@table.id 
+			GROUP BY 
+				@table.id,
+				@table.name,
+				@table.email,
+				@table.bio,
+				@table.mob,
+				@table.lock,
+				@table.created_at
+		""").fetchall()
 
 		return users
 
@@ -56,3 +70,16 @@ class UserDAO():
 		self.db.commit()
 		
 		return q
+
+	def delete(self, id):
+		try:
+			# First delete any book reservations by this user
+			self.db.query("DELETE FROM reserve WHERE user_id = {}".format(id))
+			
+			# Then delete the user
+			self.db.query("DELETE FROM @table WHERE id = {}".format(id))
+			self.db.commit()
+			return True
+		except Exception as e:
+			print(f"Error deleting user: {str(e)}")
+			return False

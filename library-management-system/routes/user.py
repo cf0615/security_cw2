@@ -29,7 +29,7 @@ def signin():
 		if len(email)<1 or len(password)<1:
 			return render_template('signin.html', error="Email and password are required")
 
-		d = user_manager.signin(email, hash(password))
+		d = user_manager.signin(email, password)
 
 		if d and len(d)>0:
 			session['user'] = int(d['id'])
@@ -53,7 +53,7 @@ def signup():
 		if len(name) < 1 or len(email)<1 or len(password)<1:
 			return render_template('signup.html', error="All fields are required")
 
-		new_user = user_manager.signup(name, email, hash(password))
+		new_user = user_manager.signup(name, email, password)
 
 		if new_user == "already_exists":
 			return render_template('signup.html', error="User already exists with this email")
@@ -96,7 +96,15 @@ def update():
 	password = str(_form["password"])
 	bio = str(_form["bio"])
 
-	user_manager.update(name, email, hash(password), bio, user_manager.user.uid())
+	# Only hash password if a new one is provided
+	if password.strip():
+		password = hash_password(password)
+	else:
+		# Get current user to keep existing password
+		current_user = user_manager.get(user_manager.user.uid())
+		password = current_user['password']
+
+	user_manager.update(name, email, password, bio, user_manager.user.uid())
 
 	flash('Your info has been updated!')
 	return redirect("/user/")

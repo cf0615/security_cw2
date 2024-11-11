@@ -1,4 +1,5 @@
 from App.User import User
+from Misc.functions import hash_password, verify_password
 
 class UserManager():
 	def __init__(self, DAO):
@@ -13,17 +14,11 @@ class UserManager():
 
 	def signin(self, email, password):
 		user = self.dao.getByEmail(email)
-		print(user)
-		print(user['password'])
 
 		if user is None:
 			return False
 
-		user_pass = user['password'] # user pass at 
-		print(user_pass)
-		print(password)
-		print(user_pass != password)
-		if user_pass != password:
+		if not verify_password(user['password'], password):
 			return False
 
 		return user
@@ -42,7 +37,8 @@ class UserManager():
 		if user is not None:
 			return "already_exists"
 
-		user_info = {"name": name, "email": email, "password": password}
+		hashed_password = hash_password(password)
+		user_info = {"name": name, "email": email, "password": hashed_password}
 		
 		new_user = self.dao.add(user_info)
 

@@ -1,4 +1,5 @@
 from App.Admin import Admin
+from Misc.functions import verify_password
 
 class AdminManager():
 	def __init__(self, DAO):
@@ -12,8 +13,7 @@ class AdminManager():
 		if admin is None:
 			return False
 
-		admin_pass = admin["password"] # admin pass at 
-		if admin_pass != password:
+		if not verify_password(admin['password'], password):
 			return False
 
 		return admin
@@ -34,3 +34,6 @@ class AdminManager():
 
 	def user_list(self):
 		return self.user.list()
+
+	def delete_user(self, id):
+		return self.user.delete(id)
