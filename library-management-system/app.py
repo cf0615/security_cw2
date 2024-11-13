@@ -26,4 +26,4 @@ app.register_blueprint(admin_view)
 
 # Run the application with HTTPS
 if __name__ == "__main__":
-    app.run(ssl_context=('cert.pem', 'cert-key.pem'))
+    app.run(ssl_context=('server.crt', 'server.key'), host='localhost', port=5000)
