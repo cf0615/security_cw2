@@ -88,23 +88,46 @@ def show_user(id=None):
 @user_view.route('/user', methods=['POST'])
 @user_manager.user.login_required
 def update():
-	user_manager.user.set_session(session, g)
-	
-	_form = request.form
-	name = str(_form["name"])
-	email = str(_form["email"])
-	password = str(_form["password"])
-	bio = str(_form["bio"])
+    user_manager.user.set_session(session, g)
+    
+    _form = request.form
+    name = str(_form["name"])
+    old_email = str(_form["old_email"])
+    new_email = str(_form.get("new_email", ""))
+    old_password = str(_form["old_password"])
+    new_password = str(_form.get("new_password", ""))
+    bio = str(_form["bio"])
 
-	# Only hash password if a new one is provided
-	if password.strip():
-		password = hash_password(password)
-	else:
-		# Get current user to keep existing password
-		current_user = user_manager.get(user_manager.user.uid())
-		password = current_user['password']
+    # Get the current user data
+    current_user = user_manager.get(user_manager.user.uid())
+    
+    # Validate old email
+    if old_email != current_user['email']:
+        flash('Old email does not match our records.')
+        return redirect("/user/")
 
-	user_manager.update(name, email, password, bio, user_manager.user.uid())
+    # Check that the new email is different from the old
+    if new_email and new_email == old_email:
+        flash('New email cannot be the same as the old email.')
+        return redirect("/user/")
 
-	flash('Your info has been updated!')
-	return redirect("/user/")
+    # Validate old password
+    if not verify_password(current_user['password'], old_password):
+        flash('Old password is incorrect.')
+        return redirect("/user/")
+
+    # Only hash the new password if provided
+    if new_password.strip():
+        hashed_password = hash_password(new_password)
+    else:
+        hashed_password = current_user['password']
+
+    # Use new email if provided and validated, otherwise keep the current email
+    email_to_update = new_email if new_email else current_user['email']
+
+    # Update the user profile
+    user_manager.update(name, email_to_update, hashed_password, bio, user_manager.user.uid())
+
+    flash('Your info has been updated successfully!')
+    return redirect("/user/")
+

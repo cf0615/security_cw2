@@ -89,7 +89,7 @@
 								<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
 									<div class="card-body">
 										<h4 class="text-center mt-4">Manage Account</h4>
-										<p class="text-center mb-4">One Account For Everything</p>
+										<p class="text-center mb-4">Change Your Email And Password Here</p>
 
 										<form method="POST" action="/user">
 											<div class="row">
@@ -100,28 +100,48 @@
 													</div>
 												</div>
 											</div>
+										
+											<!-- Old and New Email Fields -->
 											<div class="row">
 												<div class="col-sm-6">
 													<div class="form-group">
-													<label for="inputEmail3" class="form-label">Email</label>
-													<input type="email" placeholder="Email" value="{{user['email']}}" name="email" class="form-control" id="inputEmail3">
+														<label for="inputOldEmail" class="form-label">Old Email</label>
+														<input type="email" placeholder="Enter Old Email" name="old_email" class="form-control" id="inputOldEmail" required>
 													</div>
 												</div>
 												<div class="col-sm-6">
-														<div class="form-group">
-														<label for="password" class="form-label">Password</label>
-														<input type="password" placeholder="Password" class="form-control" id="password" name="password">
+													<div class="form-group">
+														<label for="inputNewEmail" class="form-label">New Email</label>
+														<input type="email" placeholder="Enter New Email" name="new_email" class="form-control" id="inputNewEmail">
 													</div>
 												</div>
 											</div>
+										
+											<!-- Old and New Password Fields -->
+											<div class="row">
+												<div class="col-sm-6">
+													<div class="form-group">
+														<label for="inputOldPassword" class="form-label">Old Password</label>
+														<input type="password" placeholder="Enter Old Password" name="old_password" class="form-control" id="inputOldPassword" required>
+													</div>
+												</div>
+												<div class="col-sm-6">
+													<div class="form-group">
+														<label for="inputNewPassword" class="form-label">New Password</label>
+														<input type="password" placeholder="Enter New Password" name="new_password" class="form-control" id="inputNewPassword">
+													</div>
+												</div>
+											</div>
+										
 											<div class="form-group">
 												<label for="inpBio" class="form-label">Bio</label>
 												<textarea class="form-control" rows="3" name="bio" id="inpBio">{{user['bio']}}</textarea>
 											</div>
+										
 											<div class="form-group">
 												<button type="submit" class="btn btn-block btn-primary">Save Changes</button>
 											</div>
-										</form>	
+										</form>											
 									</div>
 								</div>
 							</div>
