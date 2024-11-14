@@ -1,0 +1,2 @@
+insert_id,server_id,thread_id,last_insert_id,db,sql_text,lock_time,rows_sent,user_host,query_time,start_time,rows_examined
+

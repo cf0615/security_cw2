@@ -34,6 +34,7 @@ def signin():
 		if len(email)<1 or len(password)<1:
 			return render_template('admin/signin.html', error="Email and password are required")
 
+		print(email, password)
 		d = admin_manager.signin(email, password)
 
 		if d and len(d)>0:

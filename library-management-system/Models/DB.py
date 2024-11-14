@@ -6,7 +6,7 @@ class DB(object):
 	"""Initialize mysql database """
 	host = "localhost"
 	user = "root"
-	password = "cf0615"
+	password = ""
 	db = "lms"
 	table = ""
 
@@ -21,13 +21,16 @@ class DB(object):
 	def cur(self):
 		return self.mysql.get_db().cursor()
 
-	def query(self, q):
+	def query(self, q, params=None):
 		h = self.cur()
-	
-		if (len(self.table)>0):
+
+		if len(self.table) > 0:
 			q = q.replace("@table", self.table)
 
-		h.execute(q)
+		if params:
+			h.execute(q, params)
+		else:
+			h.execute(q)
 
 		return h
 

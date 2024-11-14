@@ -1,0 +1,4 @@
+name,type,event,enabled,priority,error_handling
+mysql_disable_super_read_only_if_primary,INTERNAL,AFTER_PRIMARY_ELECTION,1,1,IGNORE
+mysql_start_failover_channels_if_primary,INTERNAL,AFTER_PRIMARY_ELECTION,1,10,CRITICAL
+
