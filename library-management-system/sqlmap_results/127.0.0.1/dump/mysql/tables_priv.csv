@@ -1,0 +1,4 @@
+Db,Host,User,Grantor,Table_priv,Column_priv,Timestamp,Table_name
+mysql,localhost,mysql.session,boot@,Select,<blank>,2024-11-09 17:55:10,user
+sys,localhost,mysql.sys,root@localhost,Select,<blank>,2024-11-09 17:55:12,sys_config
+

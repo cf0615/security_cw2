@@ -1,0 +1,3 @@
+http://127.0.0.1:5000/user (POST)  # C:\Users\junch\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\LocalCache\local-packages\Python311\Scripts\sqlmap -u http://127.0.0.1:5000/user --data=name=test&email=test@example.com&password=password&bio=test --dbms=MySQL --level=5 --risk=3 --batch --dump -D lms -T users -C email,password --output-dir=sqlmap_user_update
+
+name=test&email=test@example.com&password=password&bio=test
