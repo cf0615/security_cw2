@@ -1,6 +1,8 @@
 from flask import Blueprint, g, escape, session, redirect, render_template, request, jsonify, Response
 from app import DAO
 from Misc.functions import *
+import os
+
 
 from Controllers.AdminManager import AdminManager
 from Controllers.BookManager import BookManager
@@ -13,12 +15,33 @@ user_manager = UserManager(DAO)
 admin_manager = AdminManager(DAO)
 
 
+LOG_FILE_PATH = 'C:\\Users\\User\\security_cw2-main\\security_cw2-main\\library-management-system\\user_interactions.log'
+
+
 @admin_view.route('/', methods=['GET'])
 @admin_manager.admin.login_required
 def home():
-	admin_manager.admin.set_session(session, g)
+    admin_manager.admin.set_session(session, g)
+    
+    # Read the last 10 lines from the log file
+    logs = read_logs(LOG_FILE_PATH, line_count=10)
+    
+    return render_template('admin/home.html', g=g, logs=logs)
 
-	return render_template('admin/home.html', g=g)
+def read_logs(log_file, line_count=10):
+    """Reads the last line_count lines from a log file and filters for login and book reservation events."""
+    try:
+        with open(log_file, 'r') as file:
+            # Read all lines, then filter for "login successful" or "Book reserved"
+            lines = file.readlines()
+            filtered_logs = [
+                line for line in lines if "login successful" in line 
+            ]
+            return filtered_logs[-line_count:]  # Return only the last 'line_count' filtered lines
+    except FileNotFoundError:
+        return ["No log file found."]
+
+
 
 
 @admin_view.route('/signin/', methods=['GET', 'POST'])
@@ -52,19 +75,22 @@ def signin():
 def signout():
 	admin_manager.signout()
 
-	return redirect("/admin/", code=302)
+	return redirect("/signin", code=302)
 
 
 @admin_view.route('/users/view/', methods=['GET'])
 @admin_manager.admin.login_required
 def users_view():
-	admin_manager.admin.set_session(session, g)
+    admin_manager.admin.set_session(session, g)
 
-	id = int(admin_manager.admin.uid())
-	admin = admin_manager.get(id)
-	myusers = admin_manager.getUsersList()
+    id = int(admin_manager.admin.uid())
+    admin = admin_manager.get(id)
+    
+    # Ensure `myusers` contains `lastonline`
+    myusers = admin_manager.getUsersList()  # Make sure this includes `lastonline` column
 
-	return render_template('users.html', g=g, admin=admin, users=myusers)
+    return render_template('users.html', g=g, admin=admin, users=myusers)
+
 
 
 
@@ -164,3 +190,30 @@ def delete_user(id):
 	
 	return redirect('/admin/users/view/')
 
+
+@admin_view.route('/users/promote/<int:id>', methods=['POST'])
+@admin_manager.admin.login_required
+def promote_user(id):
+    # Retrieve the user data from the users table
+    user = user_manager.get(id)
+
+    # Check if the user exists
+    if not user:
+        print("Error: User data could not be retrieved.")
+        return jsonify({"success": False, "message": "User data not found"})
+
+    # Promote the user to admin
+    print(f"Promoting user with ID {id} to admin...")
+    success = user_manager.promote_to_admin(user)
+    if not success:
+        print("Error: Failed to promote user to admin.")
+        return jsonify({"success": False, "message": "User promotion failed"})
+
+    # Delete the user from users table using UserManager
+    print(f"Deleting user with ID {id} from users table...")
+    delete_success = user_manager.delete_user(id)
+    if delete_success:
+        return jsonify({"success": True})
+    else:
+        print("Error: Failed to delete user from users table.")
+        return jsonify({"success": False, "message": "User promotion succeeded, but user deletion failed"})

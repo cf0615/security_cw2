@@ -90,3 +90,33 @@ class UserDAO():
         except Exception as e:
             print(f"Error deleting user: {str(e)}")
             return False
+          
+    def promote_to_admin(self, user):
+      try:
+        # Format the SQL string manually with email and password
+        query = "INSERT INTO admin (email, password) VALUES ('{}', '{}')".format(
+          user['email'], user['password']
+        )
+
+        # Execute the query
+        self.db.query(query)
+        self.db.commit()
+        print("User promoted to admin successfully.")
+        return True
+      except Exception as e:
+        print(f"Error promoting user to admin: {str(e)}")  # Log the error message
+        return False
+
+    def delete_user(self, user_id):
+      query = "DELETE FROM users WHERE id = %s"
+      cursor = self.db.cursor()
+      cursor.execute(query, (user_id,))
+      self.db.commit()
+      cursor.close()
+      return True
+
+    def update_last_online(self, user_id):
+      """Update lastonline column to current timestamp."""
+      query = "UPDATE users SET lastonline = CURRENT_TIMESTAMP WHERE id = {}".format(user_id)
+      self.db.query(query)  # Call query without parameters
+      self.db.commit()

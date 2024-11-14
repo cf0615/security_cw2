@@ -1,5 +1,6 @@
 from flask import Blueprint, g, escape, session, redirect, render_template, request, jsonify, Response
 from app import DAO
+import logging
 
 from Controllers.UserManager import UserManager
 from Controllers.BookManager import BookManager
@@ -49,17 +50,33 @@ def home(id):
 
 	return render_template("books.html", books=b, g=g)
 
+# Configure logging
+logging.basicConfig(
+    filename='user_interactions.log',  # Log file to store the logs
+    level=logging.INFO,                 # Log level
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 
 @book_view.route('/books/add/<id>', methods=['GET'])
 @user_manager.user.login_required
 def add(id):
-	user_id = user_manager.user.uid()
-	book_manager.reserve(user_id, id)
+    user_id = user_manager.user.uid()
+    
+    # Reserve the book for the user
+    success = book_manager.reserve(user_id, id)
+    
+    if success:
+        # Log the book reservation event
+        user_email = session.get('user_email', 'Unknown user')  # Replace with the actual session key for the user email if different
+        logging.info(f"Book reserved by {user_email} (User ID: {user_id}): Book ID {id}")
+    
+    # Fetch and display the list of books
+    b = book_manager.list()
+    user_manager.user.set_session(session, g)
+    
+    return render_template("books.html", msg="Book reserved", books=b, g=g)
 
-	b = book_manager.list()
-	user_manager.user.set_session(session, g)
-	
-	return render_template("books.html", msg="Book reserved", books=b, g=g)
 
 
 @book_view.route('/books/search', methods=['GET'])
