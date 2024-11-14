@@ -103,36 +103,50 @@ def sanitize_input(user_input):
 @user_view.route('/user', methods=['POST'])
 @user_manager.user.login_required
 def update():
-	user_manager.user.set_session(session, g)
-	
-	_form = request.form
-	name = sanitize_input(str(_form.get("name", "").strip()))  # Sanitize and strip whitespace
-	email = str(_form.get("email", "").strip())
-	password = str(_form.get("password", "").strip())
-	bio = sanitize_input(str(_form.get("bio", "").strip()))  # Sanitize bio
+    user_manager.user.set_session(session, g)
+    
+    _form = request.form
+    name = sanitize_input(str(_form.get("name", "").strip()))
+    old_email = str(_form.get("old_email", "").strip())
+    new_email = str(_form.get("new_email", "").strip())
+    old_password = str(_form.get("old_password", "").strip())
+    new_password = str(_form.get("new_password", "").strip())
+    bio = sanitize_input(str(_form.get("bio", "").strip()))  # Sanitize bio
 
-	# Check if name or email is empty and show an error if true
-	if not name:
-		flash('Name cannot be empty', 'error')
-		return redirect("/user/")
-	if not email:
-		flash('Email cannot be empty', 'error')
-		return redirect("/user/")
+    # Get the current user data
+    current_user = user_manager.get(user_manager.user.uid())
+    
+    # Validate old email
+    if old_email != current_user['email']:
+        flash('Old email does not match our records.')
+        return redirect("/user/")
 
-	# Validate email format
-	if not re.match(EMAIL_REGEX, email):
-		return render_template('signup.html', error="Invalid email format")
-	
+    # Check that the new email is different from the old
+    if new_email and new_email == old_email:
+        flash('New email cannot be the same as the old email.')
+        return redirect("/user/")
 
-	# Only hash password if a new one is provided
-	if password.strip():
-		password = hash_password(password)
-	else:
-		# Get current user to keep existing password
-		current_user = user_manager.get(user_manager.user.uid())
-		password = current_user['password']
+    # Validate old password
+    if not verify_password(current_user['password'], old_password):
+        flash('Old password is incorrect.')
+        return redirect("/user/")
+    
+    # Check if old password and new password are the same
+    if new_password.strip() and verify_password(current_user['password'], new_password):
+        flash('New password cannot be the same as the old password.')
+        return redirect("/user/")
 
-	user_manager.update(name, email, password, bio, user_manager.user.uid())
+    # Only hash the new password if provided
+    if new_password.strip():
+        hashed_password = hash_password(new_password)
+    else:
+        hashed_password = current_user['password']
 
-	flash('Your info has been updated!')
-	return redirect("/user/")
+    # Use new email if provided and validated, otherwise keep the current email
+    email_to_update = new_email if new_email else current_user['email']
+
+    # Update the user profile
+    user_manager.update(name, email_to_update, hashed_password, bio, user_manager.user.uid())
+
+    flash('Your info has been updated successfully!')
+    return redirect("/user/")
