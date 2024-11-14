@@ -41,12 +41,12 @@ def signin():
         email = str(_form["email"])
         password = str(_form["password"])
 
-		if len(email)<1 or len(password)<1:
-			return render_template('signin.html', error="Email and password are required")
-		
-		# Validate email format
-		if not re.match(EMAIL_REGEX, email):
-			return render_template('signin.html', error="Invalid email format")
+        if len(email)<1 or len(password)<1:
+            return render_template('signin.html', error="Email and password are required")
+
+        # Validate email format
+        if not re.match(EMAIL_REGEX, email):
+            return render_template('signin.html', error="Invalid email format")
 
         # Attempt to authenticate the user
         admin_data = admin_manager.signin(email, password)
@@ -57,7 +57,7 @@ def signin():
             # Log successful admin login
             logging.info(f"Admin login successful: {email}")
             return redirect("/admin")
-        
+
         elif user_data and len(user_data) > 0:
             session['user'] = int(user_data["id"])
             

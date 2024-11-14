@@ -39,7 +39,7 @@ CREATE TABLE `admin` (
 --
 
 INSERT INTO `admin` (`id`, `email`, `password`) VALUES
-(1, 'hamza@gmail.com', '025db420560617303c2ba988d050ec62562343bc0fb0358d31d2f0bae8dbede8');
+(1, 'admin@gmail.com', '$argon2id$v=19$m=65536,t=3,p=2$Kf+XpJXQZsxUDXqvfm7vAQ$MD9ngtvp9EnXjVUwBTxpvU5KMYcVMhafwsuAxPDVtmY');
 
 -- --------------------------------------------------------
 
@@ -99,7 +99,8 @@ CREATE TABLE `users` (
   `bio` longtext COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `mob` varchar(255) COLLATE utf8mb4_unicode_520_ci NOT NULL,
   `lock` tinyint(1) NOT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastonline` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_520_ci;
 
 --

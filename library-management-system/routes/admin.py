@@ -1,4 +1,4 @@
-from flask import Blueprint, g, escape, session, redirect, render_template, request, jsonify, Response
+from flask import Blueprint, g, escape, session, redirect, render_template, request, jsonify, Response, flash
 from app import DAO
 from Misc.functions import *
 import os
@@ -126,25 +126,98 @@ def view_book(id):
 @admin_view.route('/books/add', methods=['GET', 'POST'])
 @admin_manager.admin.login_required
 def book_add():
-	admin_manager.admin.set_session(session, g)
-	
-	return render_template('books/add.html', g=g)
+    admin_manager.admin.set_session(session, g)
 
+    if request.method == 'POST':
+        # Get form data
+        title = request.form.get('title')
+        qty = request.form.get('qty')
+        available = 1 if request.form.get('available') == 'on' else 0  # Checkbox returns 'on' if checked
+        author = request.form.get('author')
+        edition = request.form.get('edition')
+        desc = request.form.get('desc')
+
+        # Validation checks
+        error = None
+        try:
+            qty = int(qty)
+            if qty < 0:
+                error = "Quantity should be a positive integer."
+        except ValueError:
+            error = "Quantity must be an integer."
+
+        if not title:
+            error = "Title is required."
+        elif not author:
+            error = "Author is required."
+        elif not edition:
+            error = "Edition is required."
+        elif not desc:
+            error = "Description is required."
+
+        if error:
+            flash(error)
+            return render_template('books/add.html', g=g, error=error)
+        
+        # Call the book manager to add the book
+        success = book_manager.add_book(title, qty, available, author, edition, desc)
+
+        if success:
+            return redirect('/admin/books/')  # Redirect to the books list after adding
+        else:
+            error = "Failed to add book."
+            flash(error)
+            return render_template('books/add.html', g=g, error=error)
+
+    return render_template('books/add.html', g=g)
 
 @admin_view.route('/books/edit/<int:id>', methods=['GET', 'POST'])
 @admin_manager.admin.login_required
 def book_edit(id):
-	admin_manager.admin.set_session(session, g)
+    admin_manager.admin.set_session(session, g)
 
-	if id != None:
-		b = book_manager.getBook(id)
+    # Fetch the existing book details
+    b = book_manager.getBook(id)
 
-		if b and len(b) <1:
-			return render_template('edit.html', error="No book found!")
+    if not b:
+        return render_template('edit.html', error="No book found!")
 
-		return render_template("books/edit.html", book=b, g=g)
-	
-	return redirect('/books')
+    if request.method == 'POST':
+        # Get form data
+        title = request.form.get('title')
+        qty = request.form.get('qty')
+        available = 1 if request.form.get('available') == 'on' else 0  # Checkbox returns 'on' if checked
+        desc = request.form.get('desc')
+
+        # Validation
+        error = None
+        try:
+            qty = int(qty)
+            if qty < 0:
+                error = "Quantity should be a positive integer."
+        except ValueError:
+            error = "Quantity must be an integer."
+
+        if not title:
+            error = "Title is required."
+        elif not desc:
+            error = "Description is required."
+
+        if error:
+            flash(error)
+            return render_template('books/edit.html', book=b, g=g, error=error)
+
+        # Call the book manager to update the book
+        success = book_manager.update_book(id, title, qty, available, desc)
+
+        if success:
+            return redirect('/admin/books/')  # Redirect to the books list after updating
+        else:
+            flash("Failed to update book.")
+            return render_template('books/edit.html', book=b, g=g, error="Failed to update book.")
+
+    # If GET request, display the form with existing book data
+    return render_template("books/edit.html", book=b, g=g)
 
 @admin_view.route('/books/delete/<int:id>', methods=['GET'])
 @admin_manager.admin.login_required

@@ -92,20 +92,19 @@ class UserDAO():
             return False
           
     def promote_to_admin(self, user):
-      try:
-        # Format the SQL string manually with email and password
-        query = "INSERT INTO admin (email, password) VALUES ('{}', '{}')".format(
-          user['email'], user['password']
-        )
-
-        # Execute the query
-        self.db.query(query)
-        self.db.commit()
-        print("User promoted to admin successfully.")
-        return True
-      except Exception as e:
-        print(f"Error promoting user to admin: {str(e)}")  # Log the error message
-        return False
+        try:
+            # Use a parameterized query to safely insert email and password
+            query = "INSERT INTO admin (email, password) VALUES (%s, %s)"
+            
+            # Execute the query with user parameters
+            self.db.query(query, (user['email'], user['password']))
+            self.db.commit()
+            
+            print("User promoted to admin successfully.")
+            return True
+        except Exception as e:
+            print(f"Error promoting user to admin: {str(e)}")  # Log the error message
+            return False
 
     def delete_user(self, user_id):
       query = "DELETE FROM users WHERE id = %s"
@@ -116,7 +115,7 @@ class UserDAO():
       return True
 
     def update_last_online(self, user_id):
-      """Update lastonline column to current timestamp."""
-      query = "UPDATE users SET lastonline = CURRENT_TIMESTAMP WHERE id = {}".format(user_id)
-      self.db.query(query)  # Call query without parameters
-      self.db.commit()
+        #Update lastonline column to current timestamp using parameterized query.
+        query = "UPDATE users SET lastonline = CURRENT_TIMESTAMP WHERE id = %s"
+        self.db.query(query, (user_id,))  # Pass `user_id` as a parameter in a tuple
+        self.db.commit()

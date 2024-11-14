@@ -45,3 +45,11 @@ class BookManager():
 
 	def delete(self, id):
 		self.dao.delete(id)
+
+	def add_book(self, title, qty, available, author, edition, desc):
+		# Call the DAO method to add the book with all required fields
+		return self.dao.add_book(title, qty, available, author, edition, desc)
+	
+	def update_book(self, book_id, title, qty, available, desc):
+		# Call the DAO method to update the book with all required fields
+		return self.dao.update_book(book_id, title, qty, available, desc)
