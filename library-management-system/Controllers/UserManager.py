@@ -21,6 +21,7 @@ class UserManager():
 		if not verify_password(user['password'], password):
 			return False
 
+		self.dao.update_last_online(user['id'])
 		return user
 
 	def signout(self):
@@ -31,14 +32,14 @@ class UserManager():
 
 		return user
 
-	def signup(self, name, email, password):
+	def signup(self, name, email, password, role='user'):
 		user = self.dao.getByEmail(email)
 
 		if user is not None:
 			return "already_exists"
 
 		hashed_password = hash_password(password)
-		user_info = {"name": name, "email": email, "password": hashed_password}
+		user_info = {"name": name, "email": email, "password": hashed_password, "role": role}
 		
 		new_user = self.dao.add(user_info)
 
@@ -61,3 +62,12 @@ class UserManager():
 
 	def getUsersByBook(self, book_id):
 		return self.dao.getUsersByBook(book_id)
+	
+	def promote_to_admin(self, user):
+		return self.dao.promote_to_admin(user)
+	
+	def delete_user(self, user_id):
+		return self.dao.delete_user(user_id)
+	
+	
+	

@@ -1,12 +1,17 @@
 from flask import Blueprint, g, escape, session, redirect, render_template, request, jsonify, Response, flash
 from app import DAO
 from Misc.functions import *
+import re
+import logging
 
 from Controllers.UserManager import UserManager
+from Controllers.AdminManager import AdminManager
+
 
 user_view = Blueprint('user_routes', __name__, template_folder='/templates')
 
 user_manager = UserManager(DAO)
+admin_manager = AdminManager(DAO)
 
 @user_view.route('/', methods=['GET'])
 def home():
@@ -17,29 +22,48 @@ def home():
 
 	return render_template('home.html', g=g)
 
+# Configure logging
+logging.basicConfig(
+    filename='user_interactions.log',  # Log file to store the logs
+    level=logging.INFO,                 # Log level
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 
 @user_view.route('/signin', methods=['GET', 'POST'])
 @user_manager.user.redirect_if_login
 def signin():
-	if request.method == 'POST':
-		_form = request.form
-		email = str(_form["email"])
-		password = str(_form["password"])
+    if request.method == 'POST':
+        _form = request.form
+        email = str(_form["email"])
+        password = str(_form["password"])
 
-		if len(email)<1 or len(password)<1:
-			return render_template('signin.html', error="Email and password are required")
+        if len(email) < 1 or len(password) < 1:
+            return render_template('signin.html', error="Email and password are required")
 
-		d = user_manager.signin(email, password)
+        # Attempt to authenticate the user
+        admin_data = admin_manager.signin(email, password)
+        user_data = user_manager.signin(email, password)
 
-		if d and len(d)>0:
-			session['user'] = int(d['id'])
+        if admin_data and len(admin_data) > 0:
+            session['admin'] = int(admin_data["id"])
+            # Log successful admin login
+            logging.info(f"Admin login successful: {email}")
+            return redirect("/admin")
+        
+        elif user_data and len(user_data) > 0:
+            session['user'] = int(user_data["id"])
+            
+            # Log successful user login
+            logging.info(f"User login successful: {email}")
+            return redirect("/")
 
-			return redirect("/")
+        # Log failed login attempt
+        logging.warning(f"Failed login attempt for email: {email}")
+        return render_template('signin.html', error="Email or password incorrect")
 
-		return render_template('signin.html', error="Email or password incorrect")
+    return render_template('signin.html')
 
-
-	return render_template('signin.html')
 
 
 @user_view.route('/signup', methods=['GET', 'POST'])
@@ -52,6 +76,12 @@ def signup():
 
 		if len(name) < 1 or len(email)<1 or len(password)<1:
 			return render_template('signup.html', error="All fields are required")
+		
+		if not validate_password_strength(password):
+			return render_template(
+				'signup.html',
+				error="Password must be at least 8 characters long, include an uppercase letter, a number, and a special character."
+			)
 
 		new_user = user_manager.signup(name, email, password)
 
@@ -63,6 +93,18 @@ def signup():
 
 
 	return render_template('signup.html')
+
+# Helper function to validate password strength
+def validate_password_strength(password):
+    if len(password) < 8:
+        return False
+    if not re.search(r"[A-Z]", password):  # At least one uppercase letter
+        return False
+    if not re.search(r"[0-9]", password):  # At least one number
+        return False
+    if not re.search(r"[!@#$%^&*()_+=-]", password):  # At least one special character
+        return False
+    return True
 
 
 @user_view.route('/signout/', methods=['GET'])
