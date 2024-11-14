@@ -23,3 +23,7 @@ app.jinja_env.globals.update(
 app.register_blueprint(user_view)
 app.register_blueprint(book_view)
 app.register_blueprint(admin_view)
+
+# Run the application with HTTPS
+if __name__ == "__main__":
+    app.run(ssl_context=('server.crt', 'server.key'), host='localhost', port=5000)
