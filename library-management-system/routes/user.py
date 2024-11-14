@@ -115,6 +115,11 @@ def update():
     if not verify_password(current_user['password'], old_password):
         flash('Old password is incorrect.')
         return redirect("/user/")
+    
+    # Check if old password and new password are the same
+    if new_password.strip() and verify_password(current_user['password'], new_password):
+        flash('New password cannot be the same as the old password.')
+        return redirect("/user/")
 
     # Only hash the new password if provided
     if new_password.strip():
