@@ -38,7 +38,7 @@ Before you begin, ensure you have met the following requirements:
    CREATE DATABASE lms;
    exit;
    ```
-   -exit the MYSQL, and run the MYSQL lms again
+   - exit the MYSQL, and run the MYSQL lms again
    ```bash
    mysql -u -root -p lms
    source lms.sql;
