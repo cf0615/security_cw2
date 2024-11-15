@@ -15,7 +15,7 @@ user_manager = UserManager(DAO)
 admin_manager = AdminManager(DAO)
 
 
-LOG_FILE_PATH = 'C:\\Users\\User\\security_cw2-main\\security_cw2-main\\library-management-system\\user_interactions.log'
+LOG_FILE_PATH = '..\\user_interactions.log'
 
 
 @admin_view.route('/', methods=['GET'])
