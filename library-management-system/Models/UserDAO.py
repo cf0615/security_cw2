@@ -106,14 +106,6 @@ class UserDAO():
             print(f"Error promoting user to admin: {str(e)}")  # Log the error message
             return False
 
-    def delete_user(self, user_id):
-      query = "DELETE FROM users WHERE id = %s"
-      cursor = self.db.cursor()
-      cursor.execute(query, (user_id,))
-      self.db.commit()
-      cursor.close()
-      return True
-
     def update_last_online(self, user_id):
         #Update lastonline column to current timestamp using parameterized query.
         query = "UPDATE users SET lastonline = CURRENT_TIMESTAMP WHERE id = %s"

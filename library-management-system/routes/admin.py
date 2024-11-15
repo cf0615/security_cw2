@@ -15,8 +15,7 @@ user_manager = UserManager(DAO)
 admin_manager = AdminManager(DAO)
 
 
-LOG_FILE_PATH = '..\\user_interactions.log'
-
+LOG_FILE_PATH = os.getcwd() + '\\user_interactions.log'
 
 @admin_view.route('/', methods=['GET'])
 @admin_manager.admin.login_required
@@ -40,34 +39,6 @@ def read_logs(log_file, line_count=10):
             return filtered_logs[-line_count:]  # Return only the last 'line_count' filtered lines
     except FileNotFoundError:
         return ["No log file found."]
-
-
-
-
-@admin_view.route('/signin/', methods=['GET', 'POST'])
-@admin_manager.admin.redirect_if_login
-def signin():
-	g.bg = 1
-	
-	if request.method == 'POST':
-		_form = request.form
-		email = str(_form["email"])
-		password = str(_form["password"])
-
-		if len(email)<1 or len(password)<1:
-			return render_template('admin/signin.html', error="Email and password are required")
-
-		print(email, password)
-		d = admin_manager.signin(email, password)
-
-		if d and len(d)>0:
-			session['admin'] = int(d["id"])
-
-			return redirect("/admin")
-
-		return render_template('admin/signin.html', error="Email or password incorrect")
-
-	return render_template('admin/signin.html')
 
 
 @admin_view.route('/signout/', methods=['GET'])
@@ -284,7 +255,7 @@ def promote_user(id):
 
     # Delete the user from users table using UserManager
     print(f"Deleting user with ID {id} from users table...")
-    delete_success = user_manager.delete_user(id)
+    delete_success = admin_manager.delete_user(id)
     if delete_success:
         return jsonify({"success": True})
     else:
