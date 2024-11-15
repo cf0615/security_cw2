@@ -67,7 +67,7 @@ class UserManager():
 		return self.dao.promote_to_admin(user)
 	
 	def delete_user(self, user_id):
-		return self.dao.delete_user(user_id)
+		return self.dao.delete(user_id)
 	
 	
 	
